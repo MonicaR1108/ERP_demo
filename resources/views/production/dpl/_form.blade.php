@@ -165,7 +165,13 @@
             <h3 style="margin:0 0 10px 0; font-size:16px;">Bottom Section</h3>
             <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px;">
                 <textarea name="remarks" rows="3" placeholder="Remarks" style="padding:9px; border:1px solid #ddd; border-radius:6px;" {{ $viewOnly ? 'readonly' : '' }}>{{ old('remarks', $dpl->remarks) }}</textarea>
-                <input type="date" name="latest_date" value="{{ $latestDate }}" style="padding:9px; border:1px solid #ddd; border-radius:6px;" {{ $viewOnly ? 'readonly' : '' }}>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <input type="text" id="latestDateDisplay" value="{{ $latestDate }}" placeholder="DD/MM/YYYY" style="flex:1; padding:9px; border:1px solid #ddd; border-radius:6px;" {{ $viewOnly ? 'readonly' : '' }}>
+                    <button type="button" id="latestDatePickerBtn" title="Pick date" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; background:#fff; cursor:pointer; {{ $viewOnly ? 'display:none;' : '' }}">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <input type="date" id="latestDate" name="latest_date" value="{{ $latestDate }}" style="position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;">
+                </div>
                 <input type="text" readonly value="{{ optional($dpl->creator)->name ?? auth()->user()->name }}" style="padding:9px; border:1px solid #ddd; border-radius:6px; background:#e5e7eb;">
             </div>
         </div>
@@ -219,7 +225,7 @@
         setVal('f_wo_type', data?.wo_type);
         setVal('f_start_set', data?.starting_set_no);
         setVal('f_end_set', data?.ending_set_no);
-        setVal('f_sub_count', data?.sub_set_count);
+        setVal('f_sub_count', data ? (data.sub_set_count ?? 0) : 0);
         setVal('f_total_qty', data?.total_qty);
     }
 
@@ -286,14 +292,20 @@
         if (!v) return '';
         if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
             const p = v.split('-');
-            return p[2] + '-' + p[1] + '-' + p[0];
+            return p[2] + '/' + p[1] + '/' + p[0];
         }
+        if (/^\d{2}-\d{2}-\d{4}$/.test(v)) return v.replace(/-/g, '/');
         return v;
     }
 
     function toStoreDate(v) {
         if (!v) return '';
+        v = String(v).trim();
         if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
+            const p = v.split('/');
+            return p[2] + '-' + p[1] + '-' + p[0];
+        }
         if (/^\d{2}-\d{2}-\d{4}$/.test(v)) {
             const p = v.split('-');
             return p[2] + '-' + p[1] + '-' + p[0];
@@ -307,7 +319,7 @@
         rows.forEach(function (row) {
             html += '<div class="cell-entry" style="display:flex; align-items:center; gap:6px;">'
                 + '<input type="number" class="' + kind + '-qty" min="0" step="0.01" value="' + (row.qty || '') + '" placeholder="Qty" style="width:100px; padding:6px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '>'
-                + '<input type="date" class="' + kind + '-date date-input" value="' + toStoreDate(row.date || '') + '" style="width:150px; padding:6px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '>'
+                + '<input type="date" lang="en-GB" class="' + kind + '-date date-input" value="' + toStoreDate(row.date || '') + '" style="width:150px; padding:6px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '>'
                 + (viewOnly ? '' : '<button type="button" class="cell-add" style="' + miniBtnPlus + '">+</button><button type="button" class="cell-remove" style="' + miniBtnMinus + '">−</button>')
                 + '</div>';
         });
@@ -382,7 +394,7 @@
         if (woType === 'Others') {
             html += '<td style="' + tdStyle + '"><input type="number" class="total-qty" min="0" step="0.01" value="' + (rowData.total_qty || '') + '" style="width:130px; padding:8px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '></td>';
             html += '<td style="' + tdStyle + '"><input type="number" class="completed-qty" min="0" step="0.01" value="' + (rowData.completed_qty || '') + '" style="width:130px; padding:8px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '></td>';
-            html += '<td style="' + tdStyle + '"><input type="date" class="entry-date date-input" value="' + toStoreDate(rowData.date || '') + '" style="width:170px; padding:8px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '></td>';
+            html += '<td style="' + tdStyle + '"><input type="date" lang="en-GB" class="entry-date date-input" value="' + toStoreDate(rowData.date || '') + '" style="width:170px; padding:8px; border:1px solid #ddd; border-radius:6px;" ' + (viewOnly ? 'readonly' : '') + '></td>';
         } else if (woType === 'Sub Sets') {
             setNos.forEach(function (setNo) {
                 for (let sub = 1; sub <= subCount; sub++) {
@@ -515,7 +527,7 @@
             wrap.className = 'cell-entry';
             wrap.style.cssText = 'display:flex; align-items:center; gap:6px;';
             wrap.innerHTML = '<input type="number" class="' + kind + '-qty" min="0" step="0.01" placeholder="Qty" style="width:100px; padding:6px; border:1px solid #ddd; border-radius:6px;">'
-                + '<input type="date" class="' + kind + '-date date-input" style="width:150px; padding:6px; border:1px solid #ddd; border-radius:6px;">'
+                + '<input type="date" lang="en-GB" class="' + kind + '-date date-input" style="width:150px; padding:6px; border:1px solid #ddd; border-radius:6px;">'
                 + '<button type="button" class="cell-add" style="' + miniBtnPlus + '">+</button>'
                 + '<button type="button" class="cell-remove" style="' + miniBtnMinus + '">−</button>';
             cell.appendChild(wrap);
@@ -602,9 +614,11 @@
         }
 
         const remarksEl = document.querySelector('textarea[name="remarks"]');
-        const latestDateEl = document.querySelector('input[name="latest_date"]');
+        const latestDateEl = document.getElementById('latestDate');
+        const latestDateDisplayEl = document.getElementById('latestDateDisplay');
         if (remarksEl) remarksEl.value = data.remarks || '';
         if (latestDateEl) latestDateEl.value = data.latest_date || latestDateEl.value;
+        if (latestDateEl && latestDateDisplayEl) latestDateDisplayEl.value = toDisplayDate(latestDateEl.value || '');
 
         await loadNextDplNo();
 
@@ -615,6 +629,27 @@
     }
 
     document.getElementById('dplForm').addEventListener('submit', function (e) {
+        const latestDateEl = document.getElementById('latestDate');
+        const latestDateDisplayEl = document.getElementById('latestDateDisplay');
+        if (latestDateEl) {
+            const rawLatestDate = ((latestDateDisplayEl ? latestDateDisplayEl.value : latestDateEl.value) || '').trim();
+            if (rawLatestDate !== '') {
+                const latestDateConverted = toStoreDate(rawLatestDate);
+                if (!latestDateConverted) {
+                    e.preventDefault();
+                    alert('Invalid date format.');
+                    if (latestDateDisplayEl) {
+                        latestDateDisplayEl.focus();
+                    } else {
+                        latestDateEl.focus();
+                    }
+                    return;
+                }
+                latestDateEl.value = latestDateConverted;
+                if (latestDateDisplayEl) latestDateDisplayEl.value = toDisplayDate(latestDateConverted);
+            }
+        }
+
         const dateInputs = this.querySelectorAll('.date-input');
         for (let i = 0; i < dateInputs.length; i++) {
             const el = dateInputs[i];
@@ -623,7 +658,7 @@
             const converted = toStoreDate(original);
             if (!converted) {
                 e.preventDefault();
-                alert('Invalid date format. Use DD-MM-YYYY.');
+                alert('Invalid date format.');
                 el.focus();
                 return;
             }
@@ -652,6 +687,54 @@
 
     (async function init() {
         if (salesTypeEl) salesTypeEl.value = initialSalesType || 'Tender';
+        const latestDateEl = document.getElementById('latestDate');
+        const latestDateDisplayEl = document.getElementById('latestDateDisplay');
+        const latestDatePickerBtn = document.getElementById('latestDatePickerBtn');
+
+        function syncLatestDisplayFromStore() {
+            if (latestDateEl && latestDateDisplayEl) {
+                latestDateDisplayEl.value = toDisplayDate(latestDateEl.value || '');
+            }
+        }
+
+        function syncLatestStoreFromDisplay() {
+            if (!latestDateEl || !latestDateDisplayEl) return true;
+            const raw = (latestDateDisplayEl.value || '').trim();
+            if (raw === '') {
+                latestDateEl.value = '';
+                return true;
+            }
+            const converted = toStoreDate(raw);
+            if (!converted) return false;
+            latestDateEl.value = converted;
+            latestDateDisplayEl.value = toDisplayDate(converted);
+            return true;
+        }
+
+        syncLatestDisplayFromStore();
+
+        if (latestDateEl && latestDateDisplayEl && !viewOnly) {
+            latestDateDisplayEl.addEventListener('blur', function () {
+                if (!syncLatestStoreFromDisplay() && latestDateDisplayEl.value.trim() !== '') {
+                    alert('Invalid date format. Use DD/MM/YYYY.');
+                    latestDateDisplayEl.focus();
+                }
+            });
+
+            latestDateEl.addEventListener('change', syncLatestDisplayFromStore);
+        }
+
+        if (latestDatePickerBtn && latestDateEl && !viewOnly) {
+            latestDatePickerBtn.addEventListener('click', function () {
+                if (typeof latestDateEl.showPicker === 'function') {
+                    latestDateEl.showPicker();
+                } else {
+                    latestDateEl.focus();
+                    latestDateEl.click();
+                }
+            });
+        }
+
         await loadPoOptions(initialPoId);
         await loadWorkOrders(initialWoId);
         if (serverWo && initialWoId) {

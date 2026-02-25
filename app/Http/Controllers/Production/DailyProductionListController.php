@@ -7,6 +7,7 @@ use App\Models\CustomerOrder;
 use App\Models\DailyProductionList;
 use App\Models\ProformaInvoice;
 use App\Models\WorkOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -104,6 +105,10 @@ class DailyProductionListController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'latest_date' => $this->normalizeDateInput($request->input('latest_date')),
+        ]);
+
         $validated = $request->validate([
             'dpl_no' => 'required|string|max:255|unique:daily_production_lists,dpl_no',
             'sales_type' => 'required|in:Tender,Enquiry',
@@ -155,6 +160,10 @@ class DailyProductionListController extends Controller
     public function update(Request $request, $id)
     {
         $dpl = $this->findDpl((int) $id);
+
+        $request->merge([
+            'latest_date' => $this->normalizeDateInput($request->input('latest_date')),
+        ]);
 
         $validated = $request->validate([
             'dpl_no' => 'required|string|max:255|unique:daily_production_lists,dpl_no,' . $dpl->id,
@@ -626,5 +635,30 @@ class DailyProductionListController extends Controller
                 ->orWhereRaw("DATE_FORMAT(daily_production_lists.created_at, '%d-%m-%Y') LIKE ?", ["%{$search}%"])
                 ->orWhereRaw("DATE_FORMAT(daily_production_lists.created_at, '%Y-%m-%d') LIKE ?", ["%{$search}%"]);
         });
+    }
+
+    protected function normalizeDateInput($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd/m/Y', 'd-m-Y'] as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $value);
+                if ($date && $date->format($format) === $value) {
+                    return $date->format('Y-m-d');
+                }
+            } catch (\Throwable $e) {
+                // Keep trying other supported formats.
+            }
+        }
+
+        return $value;
     }
 }

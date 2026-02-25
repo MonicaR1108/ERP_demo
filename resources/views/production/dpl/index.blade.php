@@ -67,10 +67,10 @@
                                     <a href="{{ route('dpl.show', $dpl->id) }}" style="padding: 6px 14px; background: #28a745; color: white; text-decoration: none; border-radius: 15px; font-size: 12px;">
                                         <i class="fas fa-eye"></i> VIEW
                                     </a>
-                                    <form action="{{ route('dpl.destroy', $dpl->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete selected DPL?');">
+                                    <form action="{{ route('dpl.destroy', $dpl->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" style="padding: 6px 14px; background: #dc3545; color: white; border:none; border-radius: 15px; font-size: 12px; cursor:pointer;">
+                                        <button type="submit" onclick="return confirm('Delete selected DPL?');" style="padding: 6px 14px; background: #dc3545; color: white; border:none; border-radius: 15px; font-size: 12px; cursor:pointer;">
                                             <i class="fas fa-trash"></i> DELETE
                                         </button>
                                     </form>
@@ -112,10 +112,10 @@
                                             <a href="{{ route('dpl.show', $child->id) }}" style="padding: 5px 12px; background: #28a745; color: white; text-decoration: none; border-radius: 15px; font-size: 12px;">
                                                 <i class="fas fa-eye"></i> VIEW
                                             </a>
-                                            <form action="{{ route('dpl.destroy', $child->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete selected DPL?');">
+                                            <form action="{{ route('dpl.destroy', $child->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" style="padding: 5px 12px; background: #dc3545; color: white; border:none; border-radius: 15px; font-size: 12px; cursor:pointer;">
+                                                <button type="submit" onclick="return confirm('Delete selected DPL?');" style="padding: 5px 12px; background: #dc3545; color: white; border:none; border-radius: 15px; font-size: 12px; cursor:pointer;">
                                                     <i class="fas fa-trash"></i> DELETE
                                                 </button>
                                             </form>
@@ -199,4 +199,3 @@
 </script>
 @endpush
 @endsection
-
