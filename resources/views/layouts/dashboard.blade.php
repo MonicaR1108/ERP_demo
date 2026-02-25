@@ -38,7 +38,7 @@
             left: 0;
             top: 0;
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 1200;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -157,10 +157,16 @@
             justify-content: space-between;
             user-select: none;
             transition: background 0.3s, color 0.3s;
-            background: rgba(255,255,255,0.03);
+            background: rgba(15, 23, 42, 0.55);
+            border-left: 3px solid rgba(148, 163, 184, 0.35);
         }
         .menu-item-header:hover {
-            background: rgba(255,255,255,0.12);
+            background: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+        }
+        .menu-item-header.active-section {
+            background: rgba(59, 130, 246, 0.2);
+            border-left-color: #60a5fa;
             color: #ffffff;
         }
         .menu-item-header .menu-header-icon {
@@ -179,6 +185,7 @@
             overflow: hidden;
             transition: max-height 0.3s ease;
             max-height: 1000px;
+            background: rgba(17, 24, 39, 0.35);
         }
         .menu-sub-items.collapsed {
             max-height: 0;
@@ -193,10 +200,25 @@
             transition: all 0.3s;
             position: relative;
             line-height: 1.5;
+            border-left: 3px solid transparent;
         }
         .menu-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(59, 130, 246, 0.18);
             color: white;
+        }
+        .menu-sub-items .menu-item {
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(241, 245, 249, 0.9);
+        }
+        .menu-sub-items .menu-item:hover {
+            background: rgba(96, 165, 250, 0.22);
+            color: #ffffff;
+        }
+        .menu-item.active {
+            background: rgba(59, 130, 246, 0.28);
+            color: #ffffff;
+            border-left-color: #93c5fd;
+            font-weight: 600;
         }
         .menu-item i {
             width: 20px;
@@ -243,14 +265,20 @@
         }
         .main-content {
             margin-left: 250px;
+            width: calc(100% - 250px);
+            min-width: 0;
             flex: 1;
             transition: margin-left 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .main-content.expanded {
             margin-left: 0;
+            width: 100%;
         }
         .main-content.sidebar-collapsed {
             margin-left: 70px;
+            width: calc(100% - 70px);
         }
         .top-header {
             background: #2c3e50;
@@ -316,6 +344,7 @@
         }
         .content-area {
             padding: 30px;
+            min-width: 0;
         }
         @media (max-width: 768px) {
             .sidebar {
@@ -326,6 +355,7 @@
             }
             .main-content {
                 margin-left: 0;
+                width: 100%;
             }
         }
     </style>
@@ -890,106 +920,15 @@
             }
         }
 
-        // Initialize all collapsible menus state on page load
+        // Initialize collapsible menus: always collapsed on page load/refresh.
         document.addEventListener('DOMContentLoaded', function() {
-            // Masters menu
-            const mastersSavedState = localStorage.getItem('mastersMenuCollapsed');
-            if (mastersSavedState === 'true') {
-                const mastersMenu = document.getElementById('mastersMenu');
-                const mastersHeader = document.getElementById('mastersHeader');
-                if (mastersMenu && mastersHeader) {
-                    mastersMenu.classList.add('collapsed');
-                    mastersHeader.classList.add('collapsed');
-                }
-            }
-
-            // Tender Sales menu
-            const tenderSalesSavedState = localStorage.getItem('tenderSalesMenuCollapsed');
-            if (tenderSalesSavedState === 'true') {
-                const tenderSalesMenu = document.getElementById('tenderSalesMenu');
-                const tenderSalesHeader = document.getElementById('tenderSalesHeader');
-                if (tenderSalesMenu && tenderSalesHeader) {
-                    tenderSalesMenu.classList.add('collapsed');
-                    tenderSalesHeader.classList.add('collapsed');
-                }
-            }
-
-            // Enquiry Sales menu
-            const enquirySalesSavedState = localStorage.getItem('enquirySalesMenuCollapsed');
-            if (enquirySalesSavedState === 'true') {
-                const enquirySalesMenu = document.getElementById('enquirySalesMenu');
-                const enquirySalesHeader = document.getElementById('enquirySalesHeader');
-                if (enquirySalesMenu && enquirySalesHeader) {
-                    enquirySalesMenu.classList.add('collapsed');
-                    enquirySalesHeader.classList.add('collapsed');
-                }
-            }
-
-            // Supplier menu
-            const supplierSavedState = localStorage.getItem('supplierMenuCollapsed');
-            if (supplierSavedState === 'true') {
-                const supplierMenu = document.getElementById('supplierMenu');
-                const supplierHeader = document.getElementById('supplierHeader');
-                if (supplierMenu && supplierHeader) {
-                    supplierMenu.classList.add('collapsed');
-                    supplierHeader.classList.add('collapsed');
-                }
-            }
-
-            // Purchase menu
-            const purchaseSavedState = localStorage.getItem('purchaseMenuCollapsed');
-            if (purchaseSavedState === 'true') {
-                const purchaseMenu = document.getElementById('purchaseMenu');
-                const purchaseHeader = document.getElementById('purchaseHeader');
-                if (purchaseMenu && purchaseHeader) {
-                    purchaseMenu.classList.add('collapsed');
-                    purchaseHeader.classList.add('collapsed');
-                }
-            }
-
-            // Store menu
-            const storeSavedState = localStorage.getItem('storeMenuCollapsed');
-            if (storeSavedState === 'true') {
-                const storeMenu = document.getElementById('storeMenu');
-                const storeHeader = document.getElementById('storeHeader');
-                if (storeMenu && storeHeader) {
-                    storeMenu.classList.add('collapsed');
-                    storeHeader.classList.add('collapsed');
-                }
-            }
-
-            // Production menu
-            const productionSavedState = localStorage.getItem('productionMenuCollapsed');
-            if (productionSavedState === 'true') {
-                const productionMenu = document.getElementById('productionMenu');
-                const productionHeader = document.getElementById('productionHeader');
-                if (productionMenu && productionHeader) {
-                    productionMenu.classList.add('collapsed');
-                    productionHeader.classList.add('collapsed');
-                }
-            }
-
-            // Settings menu
-            const settingsSavedState = localStorage.getItem('settingsMenuCollapsed');
-            if (settingsSavedState === 'true') {
-                const settingsMenu = document.getElementById('settingsMenu');
-                const settingsHeader = document.getElementById('settingsHeader');
-                if (settingsMenu && settingsHeader) {
-                    settingsMenu.classList.add('collapsed');
-                    settingsHeader.classList.add('collapsed');
-                }
-            }
-
-            // System Admin menu
-            const systemAdminSavedState = localStorage.getItem('systemAdminMenuCollapsed');
-            if (systemAdminSavedState === 'true') {
-                const systemAdminMenu = document.getElementById('systemAdminMenu');
-                const systemAdminHeader = document.getElementById('systemAdminHeader');
-                if (systemAdminMenu && systemAdminHeader) {
-                    systemAdminMenu.classList.add('collapsed');
-                    systemAdminHeader.classList.add('collapsed');
-                }
-            }
+            document.querySelectorAll('.menu-sub-items').forEach(function (subMenu) {
+                subMenu.classList.add('collapsed');
+            });
+            document.querySelectorAll('.menu-item-header').forEach(function (header) {
+                header.classList.add('collapsed');
+                header.classList.remove('active-section');
+            });
 
             // Restore sidebar scroll position so it doesn't jump to top on navigation
             const sidebar = document.getElementById('sidebar');
@@ -1004,6 +943,17 @@
                     localStorage.setItem('sidebarScrollTop', sidebar.scrollTop);
                 });
             }
+
+            // Highlight active menu item only. Parent sections stay collapsed until user clicks.
+            const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+            document.querySelectorAll('.sidebar-menu a.menu-item[href]').forEach(function (link) {
+                const linkPath = (new URL(link.href, window.location.origin).pathname || '/').replace(/\/+$/, '') || '/';
+                if (linkPath !== currentPath) {
+                    return;
+                }
+
+                link.classList.add('active');
+            });
 
             // Global form submit loader to prevent double submits and show progress
             document.querySelectorAll('form').forEach(function (form) {
@@ -1039,4 +989,3 @@
     @stack('scripts')
 </body>
 </html>
-
