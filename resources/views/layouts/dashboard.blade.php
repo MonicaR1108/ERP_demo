@@ -108,7 +108,7 @@
             line-height: 1;
         }
         .sidebar-menu {
-            padding: 8px 0;
+            padding: 10px 0 14px;
             overflow-y: auto;
             overflow-x: hidden;
             flex: 1;
@@ -146,23 +146,25 @@
         }
         .menu-item-header {
             padding: 12px 20px;
-            font-size: 13px;
+            font-size: 12px;
             color: #f9fafb;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
             user-select: none;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
             background: rgba(15, 23, 42, 0.55);
             border-left: 3px solid rgba(148, 163, 184, 0.35);
+            margin: 4px 0;
         }
         .menu-item-header:hover {
             background: rgba(30, 41, 59, 0.95);
             color: #ffffff;
+            border-left-color: #7dd3fc;
         }
         .menu-item-header.active-section {
             background: rgba(59, 130, 246, 0.2);
@@ -174,41 +176,54 @@
             margin-right: 8px;
         }
         .menu-item-header .arrow {
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             font-size: 10px;
             margin-left: 8px;
+            opacity: 0.85;
         }
         .menu-item-header.collapsed .arrow {
             transform: rotate(-90deg);
+            opacity: 0.65;
         }
         .menu-sub-items {
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease, padding 0.3s ease;
             max-height: 1000px;
             background: rgba(17, 24, 39, 0.35);
+            opacity: 1;
+            transform: translateY(0);
+            padding: 2px 0 6px;
         }
         .menu-sub-items.collapsed {
             max-height: 0;
+            opacity: 0;
+            transform: translateY(-6px);
+            padding: 0;
         }
         .menu-item {
-            padding: 14px 20px;
+            padding: 11px 20px;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 15px;
-            transition: all 0.3s;
+            gap: 12px;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, padding-left 0.3s ease;
             position: relative;
             line-height: 1.5;
             border-left: 3px solid transparent;
+            font-size: 14px;
         }
         .menu-item:hover {
             background: rgba(59, 130, 246, 0.18);
             color: white;
+            padding-left: 24px;
         }
         .menu-sub-items .menu-item {
             background: rgba(255, 255, 255, 0.03);
             color: rgba(241, 245, 249, 0.9);
+            font-size: 13px;
+            padding-top: 10px;
+            padding-bottom: 10px;
         }
         .menu-sub-items .menu-item:hover {
             background: rgba(96, 165, 250, 0.22);
@@ -803,6 +818,7 @@
             if (mastersMenu && mastersHeader) {
                 mastersMenu.classList.toggle('collapsed');
                 mastersHeader.classList.toggle('collapsed');
+                mastersHeader.classList.toggle('active-section', !mastersMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('mastersMenuCollapsed', mastersMenu.classList.contains('collapsed'));
@@ -817,6 +833,7 @@
             if (tenderSalesMenu && tenderSalesHeader) {
                 tenderSalesMenu.classList.toggle('collapsed');
                 tenderSalesHeader.classList.toggle('collapsed');
+                tenderSalesHeader.classList.toggle('active-section', !tenderSalesMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('tenderSalesMenuCollapsed', tenderSalesMenu.classList.contains('collapsed'));
@@ -831,6 +848,7 @@
             if (enquirySalesMenu && enquirySalesHeader) {
                 enquirySalesMenu.classList.toggle('collapsed');
                 enquirySalesHeader.classList.toggle('collapsed');
+                enquirySalesHeader.classList.toggle('active-section', !enquirySalesMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('enquirySalesMenuCollapsed', enquirySalesMenu.classList.contains('collapsed'));
@@ -845,6 +863,7 @@
             if (supplierMenu && supplierHeader) {
                 supplierMenu.classList.toggle('collapsed');
                 supplierHeader.classList.toggle('collapsed');
+                supplierHeader.classList.toggle('active-section', !supplierMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('supplierMenuCollapsed', supplierMenu.classList.contains('collapsed'));
@@ -859,6 +878,7 @@
             if (purchaseMenu && purchaseHeader) {
                 purchaseMenu.classList.toggle('collapsed');
                 purchaseHeader.classList.toggle('collapsed');
+                purchaseHeader.classList.toggle('active-section', !purchaseMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('purchaseMenuCollapsed', purchaseMenu.classList.contains('collapsed'));
@@ -873,6 +893,7 @@
             if (storeMenu && storeHeader) {
                 storeMenu.classList.toggle('collapsed');
                 storeHeader.classList.toggle('collapsed');
+                storeHeader.classList.toggle('active-section', !storeMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('storeMenuCollapsed', storeMenu.classList.contains('collapsed'));
@@ -887,6 +908,7 @@
             if (productionMenu && productionHeader) {
                 productionMenu.classList.toggle('collapsed');
                 productionHeader.classList.toggle('collapsed');
+                productionHeader.classList.toggle('active-section', !productionMenu.classList.contains('collapsed'));
                 
                 localStorage.setItem('productionMenuCollapsed', productionMenu.classList.contains('collapsed'));
             }
@@ -900,6 +922,7 @@
             if (settingsMenu && settingsHeader) {
                 settingsMenu.classList.toggle('collapsed');
                 settingsHeader.classList.toggle('collapsed');
+                settingsHeader.classList.toggle('active-section', !settingsMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('settingsMenuCollapsed', settingsMenu.classList.contains('collapsed'));
@@ -914,6 +937,7 @@
             if (systemAdminMenu && systemAdminHeader) {
                 systemAdminMenu.classList.toggle('collapsed');
                 systemAdminHeader.classList.toggle('collapsed');
+                systemAdminHeader.classList.toggle('active-section', !systemAdminMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
                 localStorage.setItem('systemAdminMenuCollapsed', systemAdminMenu.classList.contains('collapsed'));
@@ -953,6 +977,17 @@
                 }
 
                 link.classList.add('active');
+                const subMenu = link.closest('.menu-sub-items');
+                if (!subMenu) {
+                    return;
+                }
+                subMenu.classList.remove('collapsed');
+                const headerId = subMenu.id ? subMenu.id.replace('Menu', 'Header') : '';
+                const parentHeader = headerId ? document.getElementById(headerId) : null;
+                if (parentHeader) {
+                    parentHeader.classList.remove('collapsed');
+                    parentHeader.classList.add('active-section');
+                }
             });
 
             // Global form submit loader to prevent double submits and show progress
