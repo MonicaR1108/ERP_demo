@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Production\DailyProductionListController;
+use App\Http\Controllers\Production\ProductionListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -349,5 +350,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('api/dpl-work-orders', [DailyProductionListController::class, 'apiWorkOrders'])->name('dpl.work-orders');
         Route::get('api/work-order/{id}', [DailyProductionListController::class, 'apiWorkOrder'])->name('dpl.api.work-order');
         Route::get('api/dpl-existing/{id}', [DailyProductionListController::class, 'apiExistingDpl'])->name('dpl.api.existing');
+
+        // Production Module - Production List (Clone of DPL)
+        Route::resource('production-list', ProductionListController::class)->names('production-list');
+        Route::get('api/production-list-next-no', [ProductionListController::class, 'apiNextNo'])->name('production-list.next-no');
+        Route::get('api/production-list-po-options', [ProductionListController::class, 'apiPoOptions'])->name('production-list.po-options');
+        Route::get('api/production-list-work-orders', [ProductionListController::class, 'apiWorkOrders'])->name('production-list.work-orders');
+        Route::get('api/production-list-work-order/{id}', [ProductionListController::class, 'apiWorkOrder'])->name('production-list.api.work-order');
+        Route::get('api/production-list-existing/{id}', [ProductionListController::class, 'apiExistingDpl'])->name('production-list.api.existing');
     });
 });

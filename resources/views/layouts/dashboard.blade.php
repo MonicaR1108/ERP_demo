@@ -25,13 +25,22 @@
             font-family: 'Figtree', sans-serif;
             background: #f5f5f5;
         }
+        :root {
+            --erp-nav-bg: #2c3e50;
+            --erp-hover-bg: rgba(59, 130, 246, 0.22);
+            --erp-hover-bg-strong: rgba(96, 165, 250, 0.24);
+            --erp-hover-text: #ffffff;
+            --erp-hover-accent: #7dd3fc;
+            --erp-hover-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+            --erp-underline: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%);
+        }
         .dashboard-container {
             display: flex;
             min-height: 100vh;
         }
         .sidebar {
             width: 250px;
-            background: #2c3e50;
+            background: var(--erp-nav-bg);
             color: white;
             position: fixed;
             height: 100vh;
@@ -160,11 +169,30 @@
             background: rgba(15, 23, 42, 0.55);
             border-left: 3px solid rgba(148, 163, 184, 0.35);
             margin: 4px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-item-header::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 0;
+            height: 2px;
+            background: var(--erp-underline);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.3s ease;
         }
         .menu-item-header:hover {
             background: rgba(30, 41, 59, 0.95);
-            color: #ffffff;
-            border-left-color: #7dd3fc;
+            color: var(--erp-hover-text);
+            border-left-color: var(--erp-hover-accent);
+            box-shadow: var(--erp-hover-shadow);
+            transform: scale(1.02);
+        }
+        .menu-item-header:hover::after {
+            transform: scaleX(1);
         }
         .menu-item-header.active-section {
             background: rgba(59, 130, 246, 0.2);
@@ -194,6 +222,11 @@
             transform: translateY(0);
             padding: 2px 0 6px;
         }
+        .sidebar:not(.menu-ready) .menu-sub-items,
+        .sidebar:not(.menu-ready) .menu-item-header .arrow,
+        .sidebar:not(.menu-ready) .menu-item-header {
+            transition: none !important;
+        }
         .menu-sub-items.collapsed {
             max-height: 0;
             opacity: 0;
@@ -207,16 +240,33 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, padding-left 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             line-height: 1.5;
             border-left: 3px solid transparent;
             font-size: 14px;
         }
+        .menu-item::after {
+            content: "";
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 0;
+            height: 2px;
+            background: var(--erp-underline);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.3s ease;
+        }
         .menu-item:hover {
-            background: rgba(59, 130, 246, 0.18);
-            color: white;
-            padding-left: 24px;
+            background: var(--erp-hover-bg);
+            color: var(--erp-hover-text);
+            border-left-color: var(--erp-hover-accent);
+            box-shadow: var(--erp-hover-shadow);
+            transform: scale(1.03);
+        }
+        .menu-item:hover::after {
+            transform: scaleX(1);
         }
         .menu-sub-items .menu-item {
             background: rgba(255, 255, 255, 0.03);
@@ -226,7 +276,7 @@
             padding-bottom: 10px;
         }
         .menu-sub-items .menu-item:hover {
-            background: rgba(96, 165, 250, 0.22);
+            background: var(--erp-hover-bg-strong);
             color: #ffffff;
         }
         .menu-item.active {
@@ -296,7 +346,7 @@
             width: calc(100% - 70px);
         }
         .top-header {
-            background: #2c3e50;
+            background: var(--erp-nav-bg);
             padding: 15px 30px;
             display: flex;
             justify-content: flex-end;
@@ -305,6 +355,62 @@
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+        .mobile-sidebar-toggle {
+            display: none;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.28);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .top-nav-action,
+        .branch-selector {
+            transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+        .branch-selector-wrap {
+            position: relative;
+        }
+        .top-nav-action::after,
+        .branch-selector-wrap::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .top-nav-action:hover,
+        .top-nav-action:focus-visible {
+            background: rgba(255,255,255,0.3) !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.24);
+            transform: scale(1.05);
+        }
+        .top-nav-action:hover::after,
+        .top-nav-action:focus-visible::after,
+        .branch-selector-wrap:hover::after,
+        .branch-selector-wrap:focus-within::after {
+            transform: scaleX(1);
+        }
+        .branch-selector:hover,
+        .branch-selector:focus-visible {
+            background-color: rgba(255,255,255,0.3) !important;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+            transform: scale(1.04);
+            outline: none;
         }
         .user-info {
             display: flex;
@@ -344,14 +450,31 @@
             gap: 8px;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .logout-btn::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.3s ease;
         }
         .logout-btn:hover {
             background: #c82333;
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-            transform: translateY(-1px);
+            transform: scale(1.05);
+        }
+        .logout-btn:hover::after {
+            transform: scaleX(1);
         }
         .logout-btn:active {
-            transform: translateY(0);
+            transform: scale(1);
             box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
         }
         .logout-btn i {
@@ -361,16 +484,138 @@
             padding: 30px;
             min-width: 0;
         }
+        @media (hover: hover) and (pointer: fine) {
+            .erp-custom-cursor {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                border: 1.5px solid rgba(15, 23, 42, 0.8);
+                background: rgba(15, 23, 42, 0.12);
+                box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.16), 0 0 10px rgba(15, 23, 42, 0.22);
+                pointer-events: none;
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+                z-index: 1500;
+                will-change: transform, left, top, opacity, border-color, background-color, box-shadow;
+                transition: transform 0.24s ease, border-color 0.24s ease, background-color 0.24s ease, box-shadow 0.24s ease, opacity 0.24s ease;
+            }
+            .erp-custom-cursor.is-active {
+                border-color: rgba(2, 6, 23, 0.95);
+                background: rgba(2, 6, 23, 0.18);
+                box-shadow: 0 0 0 1px rgba(2, 6, 23, 0.22), 0 0 14px rgba(2, 6, 23, 0.3);
+            }
+        }
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: min(86vw, 320px);
+                z-index: 1300;
             }
             .sidebar.open {
                 transform: translateX(0);
+                box-shadow: 8px 0 28px rgba(0,0,0,0.35);
             }
-            .main-content {
+            .main-content,
+            .main-content.sidebar-collapsed,
+            .main-content.expanded {
                 margin-left: 0;
+                width: 100% !important;
+                max-width: 100vw;
+            }
+            .top-header {
+                padding: 10px 12px;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .mobile-sidebar-toggle {
+                display: inline-flex;
+                margin-top: 2px;
+            }
+            .top-header .user-info {
+                flex: 1;
+                min-width: 0;
+                display: flex !important;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 8px !important;
+            }
+            .top-header .role-badge,
+            .top-header .entity-badge {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .top-header .branch-selector-wrap {
+                width: min(220px, 100%);
+                margin-left: auto;
+            }
+            .top-header .top-nav-action {
+                padding: 7px 10px !important;
+            }
+            .top-header .branch-selector {
                 width: 100%;
+                max-width: 100%;
+                font-size: 13px !important;
+                padding: 7px 28px 7px 10px !important;
+            }
+            .top-header .logout-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+                justify-self: end;
+            }
+            .top-header .logout-btn span {
+                display: none;
+            }
+            .content-area {
+                padding: 16px;
+                overflow-x: hidden;
+            }
+            .content-area > * {
+                width: 100%;
+                max-width: 100% !important;
+                box-sizing: border-box;
+                min-width: 0;
+            }
+            .content-area table {
+                max-width: 100%;
+            }
+            .content-area #searchForm {
+                max-width: 100% !important;
+                min-width: 0 !important;
+            }
+            .content-area #searchForm input[type="text"],
+            .content-area #searchForm input[type="search"] {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box;
+            }
+        }
+        @media (max-width: 1024px) {
+            .menu-item-header:hover,
+            .menu-item:hover,
+            .top-nav-action:hover,
+            .branch-selector:hover,
+            .logout-btn:hover {
+                transform: scale(1.01);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .menu-item-header,
+            .menu-item,
+            .top-nav-action,
+            .branch-selector,
+            .logout-btn,
+            .menu-item-header::after,
+            .menu-item::after,
+            .top-nav-action::after,
+            .branch-selector-wrap::after,
+            .logout-btn::after {
+                transition: none !important;
             }
         }
     </style>
@@ -405,7 +650,7 @@
                         <span>System Admin</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="menu-sub-items" id="systemAdminMenu">
+                    <div class="menu-sub-items collapsed" id="systemAdminMenu">
                         <a href="{{ route('branches.index') }}" class="menu-item" title="Branches">
                             <i class="fas fa-sitemap"></i>
                             <span>Branches</span>
@@ -442,7 +687,7 @@
                     <span>Enquiry Sales</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
-                <div class="menu-sub-items" id="enquirySalesMenu">
+                <div class="menu-sub-items collapsed" id="enquirySalesMenu">
                 <a href="{{ route('quotations.index') }}" class="menu-item" title="Quotations">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>Quotations</span>
@@ -460,7 +705,7 @@
                         <span>Tender Sales</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="menu-sub-items" id="tenderSalesMenu">
+                    <div class="menu-sub-items collapsed" id="tenderSalesMenu">
                         <a href="{{ route('tenders.index') }}" class="menu-item" title="Tenders">
                             <i class="fas fa-gavel"></i>
                             <span>Tenders</span>
@@ -493,7 +738,7 @@
                         <span>Supplier</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="menu-sub-items" id="supplierMenu">
+                    <div class="menu-sub-items collapsed" id="supplierMenu">
                         <a href="{{ route('suppliers.index') }}" class="menu-item" title="Suppliers">
                             <i class="fas fa-truck"></i>
                             <span>Suppliers</span>
@@ -515,7 +760,7 @@
                     <span>Purchase</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
-                <div class="menu-sub-items" id="purchaseMenu">
+                <div class="menu-sub-items collapsed" id="purchaseMenu">
                     <a href="{{ route('purchase-indents.index') }}" class="menu-item" title="Purchase Indents">
                         <i class="fas fa-file-alt"></i>
                         <span>Purchase Indents</span>
@@ -532,7 +777,7 @@
                      <span>Store</span>
                      <i class="fas fa-chevron-down arrow"></i>
                  </div>
-                <div class="menu-sub-items" id="storeMenu">
+                <div class="menu-sub-items collapsed" id="storeMenu">
                     @if(auth()->user()->isSuperAdmin() || auth()->user()->hasPermission('material-inwards', 'view'))
                     <a href="{{ route('material-inwards.index') }}" class="menu-item" title="Material Inward">
                         <i class="fas fa-arrow-down"></i>
@@ -553,7 +798,7 @@
                     <span>Production</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
-                <div class="menu-sub-items" id="productionMenu">
+                <div class="menu-sub-items collapsed" id="productionMenu">
                     <a href="{{ route('work-orders.index') }}" class="menu-item" title="Work Order">
                         <i class="fas fa-clipboard-list"></i>
                         <span>Work Order</span>
@@ -562,6 +807,10 @@
                         <i class="fas fa-list-check"></i>
                         <span>Daily Production List</span>
                     </a>
+                    <a href="{{ route('production-list.index') }}" class="menu-item" title="Production List">
+                        <i class="fas fa-list"></i>
+                        <span>Production List</span>
+                    </a>
                 </div>
 
                  <div class="menu-item-header" onclick="toggleMastersMenu()" id="mastersHeader" title="Masters">
@@ -569,7 +818,7 @@
                     <span>Masters</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
-                <div class="menu-sub-items" id="mastersMenu">
+                <div class="menu-sub-items collapsed" id="mastersMenu">
                     @if(auth()->user()->hasPermission('departments', 'view') || auth()->user()->isSuperAdmin())
                     <a href="{{ route('departments.index') }}" class="menu-item" title="Departments">
                         <i class="fas fa-building"></i>
@@ -663,7 +912,7 @@
                         <span>Settings</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="menu-sub-items" id="settingsMenu">
+                    <div class="menu-sub-items collapsed" id="settingsMenu">
                         <a href="{{ route('company-information.index') }}" class="menu-item" title="Company Information">
                             <i class="fas fa-building"></i>
                             <span>Company Information</span>
@@ -677,6 +926,9 @@
         <div class="main-content" id="mainContent">
             <!-- Top Header -->
             <header class="top-header">
+                <button class="mobile-sidebar-toggle" onclick="toggleSidebar()" title="Open Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
                     @php
                         $user = auth()->user();
@@ -687,7 +939,7 @@
                     @endphp
                     
                     @if($user->isSuperAdmin() || $user->hasPermission('purchase-indents', 'approve'))
-                        <a href="{{ route('notifications.index') }}" style="position: relative; padding: 8px 12px; background: rgba(255,255,255,0.2); border-radius: 5px; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                        <a href="{{ route('notifications.index') }}" class="top-nav-action" style="position: relative; padding: 8px 12px; background: rgba(255,255,255,0.2); border-radius: 5px; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-bell"></i>
                             @if($notificationCount > 0)
                                 <span style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">
@@ -713,8 +965,8 @@
 
                     {{-- Branch Selector (top-right) --}}
                     @if($branchesForSelector->count() > 1)
-                        <div style="position: relative;">
-                            <select id="branch-selector" onchange="switchBranch(this.value)" 
+                        <div class="branch-selector-wrap">
+                            <select id="branch-selector" class="branch-selector" onchange="switchBranch(this.value)" 
                                 style="padding: 8px 30px 8px 12px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white; font-size: 14px; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill=\"white\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 8px center;">
                                 @foreach($branchesForSelector as $branch)
                                     <option value="{{ $branch->id }}" {{ $activeBranchId == $branch->id ? 'selected' : '' }} style="background-color: #2c3e50; color: white;">
@@ -769,6 +1021,16 @@
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
             const toggleIcon = document.querySelector('.menu-toggle i');
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                const willOpen = !sidebar.classList.contains('open');
+                sidebar.classList.toggle('open', willOpen);
+                sidebar.classList.toggle('closed', !willOpen);
+                mainContent.classList.add('expanded');
+                mainContent.classList.remove('sidebar-collapsed');
+                return;
+            }
             
             // Toggle collapsed state (show icons only)
             sidebar.classList.toggle('collapsed');
@@ -796,11 +1058,13 @@
             
             if (isMobile) {
                 sidebar.classList.add('closed');
+                sidebar.classList.remove('open');
                 sidebar.classList.remove('collapsed');
                 mainContent.classList.add('expanded');
                 mainContent.classList.remove('sidebar-collapsed');
             } else {
                 // On desktop widths always show sidebar (unless user manually collapses it)
+                sidebar.classList.remove('open');
                 sidebar.classList.remove('closed');
                 mainContent.classList.remove('expanded');
             }
@@ -821,7 +1085,8 @@
                 mastersHeader.classList.toggle('active-section', !mastersMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('mastersMenuCollapsed', mastersMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_mastersMenuCollapsed', mastersMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -836,7 +1101,8 @@
                 tenderSalesHeader.classList.toggle('active-section', !tenderSalesMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('tenderSalesMenuCollapsed', tenderSalesMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_tenderSalesMenuCollapsed', tenderSalesMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -851,7 +1117,8 @@
                 enquirySalesHeader.classList.toggle('active-section', !enquirySalesMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('enquirySalesMenuCollapsed', enquirySalesMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_enquirySalesMenuCollapsed', enquirySalesMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -866,7 +1133,8 @@
                 supplierHeader.classList.toggle('active-section', !supplierMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('supplierMenuCollapsed', supplierMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_supplierMenuCollapsed', supplierMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -881,7 +1149,8 @@
                 purchaseHeader.classList.toggle('active-section', !purchaseMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('purchaseMenuCollapsed', purchaseMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_purchaseMenuCollapsed', purchaseMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -896,7 +1165,8 @@
                 storeHeader.classList.toggle('active-section', !storeMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('storeMenuCollapsed', storeMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_storeMenuCollapsed', storeMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -910,7 +1180,8 @@
                 productionHeader.classList.toggle('collapsed');
                 productionHeader.classList.toggle('active-section', !productionMenu.classList.contains('collapsed'));
                 
-                localStorage.setItem('productionMenuCollapsed', productionMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_productionMenuCollapsed', productionMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -925,7 +1196,8 @@
                 settingsHeader.classList.toggle('active-section', !settingsMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('settingsMenuCollapsed', settingsMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_settingsMenuCollapsed', settingsMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
@@ -940,55 +1212,148 @@
                 systemAdminHeader.classList.toggle('active-section', !systemAdminMenu.classList.contains('collapsed'));
                 
                 // Save state to localStorage
-                localStorage.setItem('systemAdminMenuCollapsed', systemAdminMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarV2_systemAdminMenuCollapsed', systemAdminMenu.classList.contains('collapsed'));
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
             }
         }
 
-        // Initialize collapsible menus: always collapsed on page load/refresh.
+        // Initialize collapsible menus using persisted state.
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.menu-sub-items').forEach(function (subMenu) {
-                subMenu.classList.add('collapsed');
-            });
-            document.querySelectorAll('.menu-item-header').forEach(function (header) {
-                header.classList.add('collapsed');
-                header.classList.remove('active-section');
+            // Restore menu collapse state instead of resetting all sections on each refresh.
+            const menuStateMap = [
+                { menuId: 'mastersMenu', headerId: 'mastersHeader', key: 'sidebarV2_mastersMenuCollapsed' },
+                { menuId: 'tenderSalesMenu', headerId: 'tenderSalesHeader', key: 'sidebarV2_tenderSalesMenuCollapsed' },
+                { menuId: 'enquirySalesMenu', headerId: 'enquirySalesHeader', key: 'sidebarV2_enquirySalesMenuCollapsed' },
+                { menuId: 'supplierMenu', headerId: 'supplierHeader', key: 'sidebarV2_supplierMenuCollapsed' },
+                { menuId: 'purchaseMenu', headerId: 'purchaseHeader', key: 'sidebarV2_purchaseMenuCollapsed' },
+                { menuId: 'storeMenu', headerId: 'storeHeader', key: 'sidebarV2_storeMenuCollapsed' },
+                { menuId: 'productionMenu', headerId: 'productionHeader', key: 'sidebarV2_productionMenuCollapsed' },
+                { menuId: 'settingsMenu', headerId: 'settingsHeader', key: 'sidebarV2_settingsMenuCollapsed' },
+                { menuId: 'systemAdminMenu', headerId: 'systemAdminHeader', key: 'sidebarV2_systemAdminMenuCollapsed' }
+            ];
+            const sidebar = document.getElementById('sidebar');
+
+            const persistCurrentMenuState = function () {
+                menuStateMap.forEach(function (item) {
+                    const subMenu = document.getElementById(item.menuId);
+                    if (!subMenu) {
+                        return;
+                    }
+                    localStorage.setItem(item.key, subMenu.classList.contains('collapsed'));
+                });
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
+            };
+            const setExclusiveOpenSection = function (openMenuId) {
+                menuStateMap.forEach(function (item) {
+                    const subMenu = document.getElementById(item.menuId);
+                    const header = document.getElementById(item.headerId);
+                    if (!subMenu || !header) {
+                        return;
+                    }
+
+                    const isOpen = item.menuId === openMenuId;
+                    subMenu.classList.toggle('collapsed', !isOpen);
+                    header.classList.toggle('collapsed', !isOpen);
+                    header.classList.toggle('active-section', isOpen);
+                    localStorage.setItem(item.key, (!isOpen).toString());
+                });
+                localStorage.setItem('sidebarMenuStateSnapshotTs', Date.now().toString());
+            };
+
+            menuStateMap.forEach(function (item) {
+                const subMenu = document.getElementById(item.menuId);
+                const header = document.getElementById(item.headerId);
+                if (!subMenu || !header) {
+                    return;
+                }
+
+                const savedState = localStorage.getItem(item.key);
+                const shouldCollapse = savedState === null ? true : savedState === 'true';
+
+                subMenu.classList.toggle('collapsed', shouldCollapse);
+                header.classList.toggle('collapsed', shouldCollapse);
+                header.classList.toggle('active-section', !shouldCollapse);
             });
 
-            // Restore sidebar scroll position so it doesn't jump to top on navigation
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-                const savedScroll = localStorage.getItem('sidebarScrollTop');
+            // Restore sidebar menu scroll position so it doesn't jump to top on navigation
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            if (sidebarMenu) {
+                const savedScroll = localStorage.getItem('sidebarMenuScrollTop');
                 if (savedScroll !== null) {
-                    sidebar.scrollTop = parseInt(savedScroll, 10) || 0;
+                    sidebarMenu.scrollTop = parseInt(savedScroll, 10) || 0;
                 }
                 
                 // Persist scroll position while user scrolls
-                sidebar.addEventListener('scroll', function () {
-                    localStorage.setItem('sidebarScrollTop', sidebar.scrollTop);
+                sidebarMenu.addEventListener('scroll', function () {
+                    localStorage.setItem('sidebarMenuScrollTop', sidebarMenu.scrollTop);
                 });
             }
 
-            // Highlight active menu item only. Parent sections stay collapsed until user clicks.
+            // Highlight one active menu item and keep only its parent section open.
             const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
-            document.querySelectorAll('.sidebar-menu a.menu-item[href]').forEach(function (link) {
+            const menuLinks = Array.from(document.querySelectorAll('.sidebar-menu a.menu-item[href]'));
+            const activeLink = menuLinks.find(function (link) {
                 const linkPath = (new URL(link.href, window.location.origin).pathname || '/').replace(/\/+$/, '') || '/';
-                if (linkPath !== currentPath) {
+                return linkPath === currentPath;
+            });
+            if (activeLink) {
+                activeLink.classList.add('active');
+                const subMenu = activeLink.closest('.menu-sub-items');
+                if (subMenu && subMenu.id) {
+                    setExclusiveOpenSection(subMenu.id);
+                }
+            }
+
+            // Keep clicked subsection's parent expanded before page navigation.
+            document.querySelectorAll('.menu-sub-items a.menu-item[href]').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    const sidebarMenu = document.querySelector('.sidebar-menu');
+                    if (sidebarMenu) {
+                        localStorage.setItem('sidebarMenuScrollTop', sidebarMenu.scrollTop);
+                    }
+
+                    const subMenu = link.closest('.menu-sub-items');
+                    if (!subMenu) {
+                        persistCurrentMenuState();
+                        return;
+                    }
+
+                    if (subMenu.id) {
+                        setExclusiveOpenSection(subMenu.id);
+                    }
+                    persistCurrentMenuState();
+                }, true);
+            });
+
+            // Persist just before navigation/reload (including filter reset actions)
+            window.addEventListener('beforeunload', persistCurrentMenuState);
+            window.addEventListener('pagehide', persistCurrentMenuState);
+
+            // Preserve sidebar state when page-level reset/clear controls are used.
+            document.addEventListener('click', function (event) {
+                const trigger = event.target.closest('button, input[type="button"], input[type="submit"], a');
+                if (!trigger) {
                     return;
                 }
 
-                link.classList.add('active');
-                const subMenu = link.closest('.menu-sub-items');
-                if (!subMenu) {
-                    return;
+                const label = ((trigger.textContent || trigger.value || '') + '').toLowerCase().trim();
+                if (trigger.type === 'reset' || label === 'reset' || label === 'clear') {
+                    persistCurrentMenuState();
                 }
-                subMenu.classList.remove('collapsed');
-                const headerId = subMenu.id ? subMenu.id.replace('Menu', 'Header') : '';
-                const parentHeader = headerId ? document.getElementById(headerId) : null;
-                if (parentHeader) {
-                    parentHeader.classList.remove('collapsed');
-                    parentHeader.classList.add('active-section');
-                }
+            }, true);
+
+            document.querySelectorAll('form').forEach(function (form) {
+                form.addEventListener('reset', function () {
+                    persistCurrentMenuState();
+                });
             });
+
+            // Enable transitions only after initial state restore to avoid open/close flicker on navigation.
+            if (sidebar) {
+                window.requestAnimationFrame(function () {
+                    sidebar.classList.add('menu-ready');
+                });
+            }
 
             // Global form submit loader to prevent double submits and show progress
             document.querySelectorAll('form').forEach(function (form) {
@@ -1019,6 +1384,77 @@
                     });
                 });
             });
+
+            // Custom cursor effect only inside dashboard content area on pointer-based devices
+            const isDashboardPage = @json(request()->routeIs('dashboard')) || (window.location.pathname || '').replace(/\/+$/, '') === '/dashboard';
+            const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            const contentArea = document.querySelector('.content-area');
+            if (isDashboardPage && supportsFinePointer && contentArea) {
+                contentArea.classList.add('cursor-effect-enabled');
+
+                const customCursor = document.createElement('div');
+                customCursor.className = 'erp-custom-cursor';
+                document.body.appendChild(customCursor);
+
+                const interactiveSelector = 'a, button, .btn, [role="button"], [onclick], input[type="submit"], input[type="button"], input[type="checkbox"], input[type="radio"], select';
+
+                let targetX = 0;
+                let targetY = 0;
+                let currentX = 0;
+                let currentY = 0;
+                let visible = false;
+                let isInteractive = false;
+                let rafId = null;
+
+                const animateCursor = function () {
+                    currentX += (targetX - currentX) * 0.2;
+                    currentY += (targetY - currentY) * 0.2;
+
+                    customCursor.style.left = currentX + 'px';
+                    customCursor.style.top = currentY + 'px';
+                    customCursor.style.opacity = visible ? '1' : '0';
+                    customCursor.style.transform = 'translate(-50%, -50%) scale(' + (isInteractive ? '1.16' : '1') + ')';
+                    customCursor.classList.toggle('is-active', isInteractive);
+
+                    if (visible) {
+                        rafId = window.requestAnimationFrame(animateCursor);
+                    } else {
+                        rafId = null;
+                    }
+                };
+
+                const startAnimation = function () {
+                    if (rafId === null) {
+                        rafId = window.requestAnimationFrame(animateCursor);
+                    }
+                };
+
+                contentArea.addEventListener('mouseenter', function (event) {
+                    visible = true;
+                    targetX = event.clientX;
+                    targetY = event.clientY;
+                    currentX = event.clientX;
+                    currentY = event.clientY;
+                    startAnimation();
+                });
+
+                contentArea.addEventListener('mousemove', function (event) {
+                    targetX = event.clientX;
+                    targetY = event.clientY;
+                    isInteractive = !!event.target.closest(interactiveSelector);
+                    startAnimation();
+                });
+
+                contentArea.addEventListener('mouseleave', function () {
+                    visible = false;
+                    isInteractive = false;
+                });
+
+                window.addEventListener('blur', function () {
+                    visible = false;
+                    isInteractive = false;
+                });
+            }
         });
     </script>
     @stack('scripts')
