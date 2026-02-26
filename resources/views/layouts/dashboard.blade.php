@@ -118,10 +118,11 @@
         }
         .sidebar-menu {
             padding: 10px 0 14px;
-            overflow-y: auto;
+            overflow-y: scroll;
             overflow-x: hidden;
             flex: 1;
             max-height: calc(100vh - 60px);
+            scrollbar-gutter: stable;
         }
         .sidebar-menu::-webkit-scrollbar {
             width: 6px;
