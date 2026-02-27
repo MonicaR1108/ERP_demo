@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\Menu;
 use App\Models\RoleFormPermission;
-use App\Models\Permission;
-use App\Models\RolePermissionAudit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RolePermissionController extends Controller
 {
@@ -29,26 +28,18 @@ class RolePermissionController extends Controller
      */
     public function select()
     {
-        $roles = Role::with('permissions')->orderBy('name')->get();
-        
-        // Calculate permission count for each role (permissions with at least one flag set)
-        $roles->each(function($role) {
-            $role->permission_count = $role->permissions->filter(function($permission) {
-                return ($permission->pivot->read ?? false) || 
-                       ($permission->pivot->write ?? false) || 
-                       ($permission->pivot->delete ?? false);
-            })->count();
+        $roles = Role::orderBy('name')->get()->filter(function ($role) {
+            return $role->slug !== 'super-admin';
         });
-        
-        // Filter to only show roles with permissions assigned, excluding Super Admin
-        $roles = $roles->filter(function($role) {
-            // Exclude Super Admin role (has access to all forms by default)
-            if ($role->slug === 'super-admin') {
-                return false;
-            }
-            return $role->permission_count > 0;
+
+        $counts = RoleFormPermission::select('role_id', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('role_id')
+            ->pluck('cnt', 'role_id');
+
+        $roles->each(function ($role) use ($counts) {
+            $role->permission_count = (int) ($counts[$role->id] ?? 0);
         });
-        
+
         return view('masters.roles.select-role', compact('roles'));
     }
 
@@ -58,32 +49,11 @@ class RolePermissionController extends Controller
      */
     public function create()
     {
-        // Get all roles with their permissions
-        $allRoles = Role::with('permissions')->orderBy('name')->get();
-        
-        // Filter out Super Admin and roles that already have permissions assigned
-        $roles = $allRoles->filter(function($role) {
-            // Exclude Super Admin role (has access to all forms by default)
-            if ($role->slug === 'super-admin') {
-                return false;
-            }
-            
-            // Exclude roles that already have permissions assigned
-            $hasPermissions = $role->permissions->filter(function($permission) {
-                return ($permission->pivot->read ?? false) || 
-                       ($permission->pivot->write ?? false) || 
-                       ($permission->pivot->delete ?? false);
-            })->count() > 0;
-            
-            return !$hasPermissions; // Only include roles without permissions
+        $roles = Role::orderBy('name')->get()->filter(function ($role) {
+            return $role->slug !== 'super-admin';
         });
-        
-        // Get all active permissions, ensuring we get all of them
-        $permissions = Permission::where('is_active', true)
-            ->orderByRaw('COALESCE(form_name, name) ASC')
-            ->get();
-        
-        return view('masters.roles.assign-permissions', compact('roles', 'permissions'));
+
+        return view('masters.roles.assign-permissions', compact('roles'));
     }
 
     /**

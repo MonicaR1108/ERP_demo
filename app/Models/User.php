@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Form;
+use App\Models\RoleFormPermission;
 
 class User extends Authenticatable
 {
@@ -195,43 +197,78 @@ class User extends Authenticatable
 
         $checkColumn = $typeMap[strtolower($type)] ?? 'read';
 
-        // Load roles with their permissions if not already loaded
-        $this->loadMissing(['roles.permissions']);
+        // Collect role IDs from both the many-to-many and legacy single role.
+        $this->loadMissing(['roles.permissions', 'role.permissions']);
+        $roles = $this->roles;
+        if ($this->role && !$roles->contains('id', $this->role->id)) {
+            $roles = $roles->concat([$this->role]);
+        }
 
-        foreach ($this->roles as $role) {
-            // Find permission for the given form in this role
+        $roleIds = $roles->pluck('id')->unique()->filter()->values();
+        if ($roleIds->isEmpty()) {
+            return false;
+        }
+
+        // First, try RoleFormPermission (menus/forms system) using route_name or form code.
+        $formKey = strtolower(trim($form));
+        $codeCandidates = array_values(array_unique(array_filter([
+            $formKey,
+            $formKey . '_form',
+            str_replace('-', '_', $formKey) . '_form',
+        ])));
+
+        $formIds = Form::query()
+            ->whereIn('code', $codeCandidates)
+            ->orWhere('route_name', 'like', $formKey . '.%')
+            ->pluck('id');
+
+        if ($formIds->isNotEmpty()) {
+            $minType = RoleFormPermission::VIEW;
+            if ($checkColumn === 'write') {
+                $minType = RoleFormPermission::ADD_EDIT_UPDATE;
+            } elseif ($checkColumn === 'delete') {
+                $minType = RoleFormPermission::FULL_ACCESS;
+            }
+
+            $hasFormPermission = RoleFormPermission::query()
+                ->whereIn('role_id', $roleIds)
+                ->whereIn('form_id', $formIds)
+                ->where('permission_type', '>=', $minType)
+                ->exists();
+
+            return $hasFormPermission;
+        }
+
+        // Fallback to legacy role_permission pivot (permissions table).
+        foreach ($roles as $role) {
             $permission = $role->permissions->firstWhere('form_name', $form);
-            
-            if ($permission) {
-                $pivot = $permission->pivot;
+            if (!$permission) {
+                continue;
+            }
 
-                // Hierarchical permission logic:
-                // - Delete => full access (delete, write, read)
-                // - Write  => write + read
-                // - Read   => read only
-                $hasPermission = false;
+            $pivot = $permission->pivot;
+            $hasPermission = false;
 
-                switch ($checkColumn) {
-                    case 'read':
-                        $hasPermission = ($pivot->read ?? false)
-                            || ($pivot->write ?? false)
-                            || ($pivot->delete ?? false);
-                        break;
-                    case 'write':
-                        $hasPermission = ($pivot->write ?? false)
-                            || ($pivot->delete ?? false);
-                        break;
-                    case 'delete':
-                        $hasPermission = ($pivot->delete ?? false);
-                        break;
-                    default:
-                        $hasPermission = ($pivot->$checkColumn ?? false);
-                        break;
-                }
+            switch ($checkColumn) {
+                case 'read':
+                    $hasPermission = ($pivot->read ?? false)
+                        || ($pivot->write ?? false)
+                        || ($pivot->delete ?? false);
+                    break;
+                case 'write':
+                    $hasPermission = ($pivot->write ?? false)
+                        || ($pivot->delete ?? false);
+                    break;
+                case 'delete':
+                    $hasPermission = ($pivot->delete ?? false);
+                    break;
+                default:
+                    $hasPermission = ($pivot->$checkColumn ?? false);
+                    break;
+            }
 
-                if ($hasPermission) {
+            if ($hasPermission) {
                 return true;
-                }
             }
         }
 

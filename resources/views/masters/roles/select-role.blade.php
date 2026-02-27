@@ -74,7 +74,7 @@
                 <div style="flex: 1;">
                     <strong style="color: #333; display: block; margin-bottom: 8px;">Note:</strong>
                     <p style="margin: 0; color: #666; line-height: 1.8; font-size: 14px;">
-                        Only roles with assigned permissions are shown in this list. Click <strong>"Add"</strong> to assign permissions to a new role, or click <strong>"Edit"</strong> to modify permissions for an existing role.
+                        All roles (except Super Admin) are listed here. Click <strong>"Add"</strong> to assign permissions to a role, or click <strong>"Edit"</strong> to modify permissions for an existing role.
                     </p>
                 </div>
             </div>
@@ -82,7 +82,7 @@
     @else
         <div style="text-align: center; padding: 40px; color: #666;">
             <i class="fas fa-user-shield" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
-            <p style="font-size: 18px; margin-bottom: 20px;">No roles with permissions found.</p>
+            <p style="font-size: 18px; margin-bottom: 20px;">No roles found.</p>
             <a href="{{ route('role-permissions.create') }}" style="padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;">
                 <i class="fas fa-plus"></i> Add Permissions to Role
             </a>
